@@ -1,286 +1,454 @@
-## cocos2dx 2.9语音文档
+## Unity3D语音文档
 
-```xml
-SDK说明：
-一：本SDK支持两种语音模式：
-	1.实时语音
-		两人都进入同一个房间，就可以像打电话那样聊天，支持多人进入同一个房间
-  2.离线语音
-		如同微信发语音那样，录制一段语音发送到服务器，服务器返回此语音在服务器的地址，
-		然后用户可将此地址发送给其他用户达到语音交流的效果
-二：其他：
-  暂时不支持模拟器，需要真机来开发调试
-  根据业务需求，可选择只接入语音功能，以减小应用的体积
+##### 1.下载SDK
+ 1.[下载Unity3D SDK包 版本：1.0.0](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_zip/RTChatSDK_unity_release_2.9.0-20170810.zip)
+
+2.双击GiantSDK_Voice_2.9.0.unitypackage导入
+或则直接复制 Unity3D/ 下内容到 Assets/下
+
+
+##### 2.系统配置  
+   1.在iOS ／android, Player setting 设置宏（RTCHAT_ENABLE）开关，否则无法调用语音功能。
+   ![](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/gavoice_hong.png)
+
+   2.初始化接口，注册回调事件接口，只能执行一次，使用状态值判定 或 是放至单例脚本的Awake或Start函数中.
+   示例
+   ```
+   public static bool isStart = false;
+   void Start()
+   {
+       if (!isStart)
+       {
+           isStart = true;
+           GiantVoiceManager.OnPlayOverComplete += (int retCode) =>
+                  {
+                      Debug.Log(" startplayFinishResult  In C# Client re = " + retCode);
+                  };
+       }
+   }
+   ```
+   3.**接口需要主线程调用。**
+
+   4.**默认麦克风打开，扬声器关闭**
+
+   5.**按home键进入后台，如果想要没有声音需要 设置SpeakerVolum（0） 扬声器听筒都没有声音了，CloseMic()说话对方听不到**
+
+##### 3.基本API
+
+###### 3.1初始化接口
+
+
+  *1.接口说明  *
+
+  初始化SDK,在其他接口之前调用。
+
+ *2.函数原型 *
+
+   ```
+   //初始化sdk(appid ,appkey 可以联系我们，serverurl,xif,customip)
+    void InitGASDK (string appId, string appKey, string  userId, string uploadServerUrl, string xfid,string roomServerUrl)
+
+   ```
+| 参数        | 类型           | 意义   |
+| ------------- |:-------------:| -----:|
+| appId      | string | 应用标识,可以联系我们申请 |
+| appKey     | string      |   应用标识,可以联系我们申请|
+| userId     | string      |   用户标识|
+| uploadServerUrl | string     |  录音上传地址 |
+| xfid | string     |    录音ID(Android 和iOS 会不一样) |
+| roomServerUrl | string     |  实时语音地址 |
+| enableMusicMode | bool     |  音乐模式 默认关闭false（可选） |
+
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.InitGASDK (appid, appKey, userId,uploadserver,"58536195","192.168.1.1:8081");
 ```
 
-### 一：下载SDK
-1.[Cocos2d语音SDK](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_zip/RTChatSDK_cocos_release_2.9.0-20170810.zip)
+###### 3.2加入房间接口
 
+
+  *1.接口说明  *
+
+   实时语音，加入房间
+
+ *2.函数原型 *
+
+   ```
+   //进入房间（roomid:房间id，cb加入房间回调）
+  void JoinRoom (string roomId)；
+
+
+   ```
+| 参数        | 类型           | 意义   |
+| ------------- |:-------------:| -----:|
+| roomId      | string | 房间号 |
+| retCode      | int |加入房间状态：1成功，0失败 |
+
+
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.JoinRoom (roomidValue);
+
+
+```
+###### 3.3退出房间接口
+
+
+  *1.接口说明  *
+
+   实时语音，退出房间
+
+ *2.函数原型 *
+
+   ```
+  //退出房间（roomid:房间id，cb加入房间回调）
+  void QuitRoom ()；
+
+   ```
+
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.QuitRoom ();
+
+```
+
+###### 3.4关闭扬声器
+
+
+  *1.接口说明  *
+
+   实时语音，关闭扬声器
+
+ *2.函数原型 *
+
+   ```
+   //关闭扬声器外放功能
+    void CloseLoudSpeaker ()
+
+   ```
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.CloseLoudSpeaker ();
+
+```
+###### 3.5打开扬声器
+
+
+  *1.接口说明  *
+
+   实时语音，打开扬声器
+
+ *2.函数原型 *
+
+   ```
+   //打开扬声器外放功能
+    void OpenLoudSpeaker ()
+
+   ```
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.OpenLoudSpeaker ();
+
+```
+###### 3.6打开麦克风
+
+
+  *1.接口说明  *
+
+   实时语音，打开麦克风
+
+ *2.函数原型 *
+
+   ```
+   //打开麦克风
+    void OpenMic ()
+
+   ```
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.OpenMic ();
+
+```
+###### 3.6关闭麦克风
+
+
+  *1.接口说明  *
+
+   实时语音，关闭麦克风
+
+ *2.函数原型 *
+
+   ```
+   //关闭麦克风
+    void CloseMic ()
+
+   ```
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.CloseMic ();
+
+```
+###### 3.7 设置语音外放音量调节
+
+
+  *1.接口说明  *
+
+   实时语音，设置语音波形外放（默认系统音量）默认1.0
+
+ *2.函数原型 *
+
+   ```
+   //设置语音外放音量调节（取值范围为0-10的整数，最大值请根据回音情况做调节）
+   public void SpeakerVolum (float volume)；
+
+   ```
+   | 参数        | 类型           | 意义   |
+   | ------------- |:-------------:| -----:|
+   | volume     | float      |   音量调节，范围（0，10）|
+
+
+*3.示例代码*
+```
+GiantVoiceManager.Instance.SpeakerVolum (4.0);
+
+```
 ---
+###### 3.8 开始录制语音消息
 
-### 二：系统配置  
-###### 2.1 iOS系统配置
 
->对于iOS的Xcode工程，只要将include目录和libs/iOS目录添加到Xcode工程中并设置头文件引用位置即可
+  *1.接口说明  *
 
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_ios_import.png" width="430">
+   语音消息，开始录制语音消息
 
-Xcode 显示为:
+ *2.函数原型 *
 
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_ios_2.png" width="430">
+   ```
+   //开始录制语音消息（true 需要， false 不需要）
+    void StartRecordVoice (bool needConvertWord)；
 
-需要添加的库:
+   ```
+   | 参数        | 类型           | 意义   |
+   | ------------- |:-------------:| -----:|
+   | needConvertWord     | bool      |   是否需要翻译为文字 true 需要， false 不需要|
 
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_ios_3.png" width="430">
 
-##### 2.2 Android 系统配置
-
-###### 2.2.1 Eclipse配置：
- >把libs/Android/下文件放到proj.android/libs目录下。然后include和libs/Android目录放到合适的目录，比如工程下面建一个GiantVoice目录：
-
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_1.png" width="430">
-
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_2.png" width="430">
-
-在proj.anroid/jni的Android.mk中添加对库文件和头文件的引用：
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_3.png" width="430">
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_4.png" width="430">
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_5.png" width="430">
-
-在proj.anroid/jni的Application.mk中配置APP_ABI
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_8.png" width="430">
-
-在proj.android/AndroidManifest.xml添加如下权限即可按照Cocos的编译方式
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/cocosandroid-07171.jpg" width="430">
-最后需要在Java中初始化，比如：
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_7.png" width="430">
-
-###### 2.2.2 Android Studio配置：
-```xml
-  在app目录下创建文件夹libs，将下载的libs中的Android中的文件拷到libs目录下，并Add AS library
-  配置Android.mk
-    在app/jni/Android.mk中添加对库文件和头文件的引用：
+*3.示例代码*
 ```
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/cocos_studio1.png" width="430">
-<br/>
-<br>
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/cocos_studio2.png" width="430">
-<br/>
+GiantVoiceManager.Instance.StartRecordVoice (true);
 
-```java
-配置 Application.mk:
-    在app/jni/Application.mk中配置对ABI的支持：
-    APP_STL := gnustl_static
-
-    APP_CPPFLAGS := -frtti -DCC_ENABLE_CHIPMUNK_INTEGRATION=1 -std=c++11 -fsigned-char
-    APP_LDFLAGS := -latomic
-
-    APP_ABI := armeabi-v7a
-
-    ifeq ($(NDK_DEBUG),1)
-      APP_CPPFLAGS += -DCOCOS2D_DEBUG=1
-      APP_OPTIM := debug
-    else
-      APP_CPPFLAGS += -DNDEBUG
-      APP_OPTIM := release
-    endif
-
-AndroidManifest.xml 中添加权限：
-
-    <!-- 语音sdk权限开始 -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- 语音sdk权限结束 -->
-
-在启动Activity中添加初始化：
-
-    public class AppActivity extends Cocos2dxActivity {
-        private NativeVoiceEngine nativeVoiceEngine = new NativeVoiceEngine();
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            // TODO Auto-generated method stub
-            super.onCreate(savedInstanceState);
-            nativeVoiceEngine.register(this);
-        }
-    }
 ```
+###### 3.9 停止录制语音消息
 
 
+  *1.接口说明  *
+
+   语音消息，停止录制语音消息
+
+ *2.函数原型 *
+
+   ```
+   //停止录制语音消息（录制回调）
+   void StopRecordVoice ()
+
+   ```
 
 
-
----
-
-### 三：基本API
-###### 3.1 接口需要主线程调用
-
-###### 3.2 初始化sdk:
-```Objective-C
-主线程中调用，不可重复初始化
-  RTChatSDKMain::sharedInstance().initSDK(appid, appkey);
-用于初始化SDK
-
-
-函数原型：
-  SdkErrorCode initSDK(const char* appid, const char* key);
+*3.示例代码*
 ```
-参数说明：
+GiantVoiceManager.Instance.StopRecordVoice ();
 
-参数|类型|说明
-:-:|:-:|:-:
-appId|String|官网上申请的appId
-key|String|官网上申请的key
-
-###### 3.3 设置用户信息:
-```Objective-C
-主线程中调用
-  RTChatSDKMain::sharedInstance().setUserInfo(username, "32261be4ed6fd0d90976da1f7a85237d");
-函数原型：
-  SdkErrorCode setUserInfo(const char* username, const char* userkey);
 ```
-参数说明：
+###### 3.10 播放录制语音消息
 
-参数|类型|说明
-:-:|:-:|:-:
-username|String|用户名
-userkey|String|用户key
 
-###### 3.4 进入房间：
-```Objective-C
-主线程中调用
-  RTChatSDKMain::sharedInstance().requestJoinPlatformRoom(roomid, kVoiceOnly, 4);
-函数原型：
-  SdkErrorCode requestJoinPlatformRoom(const char* roomid_p, enMediaType meida_type = kVoiceOnly, int layout_mode = 4);
+  *1.接口说明  *
+
+   语音消息，播放录制语音消息
+
+ *2.函数原型 *
+
+   ```
+   //播放录制语音消息
+   void StartPlayVoice (string voiceUrl)；
+
+   ```
+   | 参数        | 类型           | 意义   |
+   | ------------- |:-------------:| -----:|
+   | voiceUrl     | string      |   语音上传地址 （录音完成回调 取得）|
+
+
+*3.示例代码*
 ```
-参数说明：
+GiantVoiceManager.Instance.StartPlayVoice ("http://xxxxxxx");
 
-参数|类型|说明
-:-:|:-:|:-:
-roomId|String|房间名
-media_type|int|媒体类型，语音值为1，具体值见以下说明
-layout_mode|int|为视频接口使用，用来确定可同时查看多少人的视频，语音随意填值
-```xml
-media_type的值及含义：
-	kVoiceOnly = 1;//语音
-	kVideo_normalDefinition = 3;//视频，普通画质
-	kVideo_highDefinition = 7;//视频，高画质
-	kVideo_veryHighDefinition = 11;//视频，较高画质
-	kLookLiveBC = 16;//直播
 ```
+###### 3.11 取消录制语音消息
 
-###### 3.5 打开/关闭扬声器：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-  RTChatSDKMain::sharedInstance().setLoudSpeaker(enable);
-函数原型：
-  SdkErrorCode setLoudSpeaker(bool enable);
+
+  *1.接口说明  *
+
+   语音消息，取消录制语音消息
+
+ *2.函数原型 *
+
+   ```
+   //取消录制语音消息
+   void CancelRecordVoice ()；
+  ```
+
+*3.示例代码*
 ```
-参数说明：
+GiantVoiceManager.Instance.CancelRecordVoice ();
 
-参数|类型|说明
-:-:|:-:|:-:
-enable|boolean| true:打开扬声器；false:关闭扬声器
-
-###### 3.6 调节音量：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-  RTChatSDKMain::sharedInstance().adjustSpeakerVolume(value);
-函数原型：
-  SdkErrorCode adjustSpeakerVolume(float volume);
 ```
-参数说明：
+###### 3.11 停止播放语音消息
 
-参数|类型|说明
-:-:|:-:|:-:
-	volumeValue|float|音量数值，范围0-10
 
-###### 3.7 离开房间：
-```Objective-C
-主线程中调用
-	RTChatSDKMain::sharedInstance().requestLeavePlatformRoom();
-函数原型：
-	SdkErrorCode requestLeavePlatformRoom();
+  *1.接口说明  *
+
+   语音消息，停止播放语音消息
+
+ *3.函数原型 *
+
+   ```
+   //停止播放语音消息
+   void StopPlayVoice ()；
+  ```
+
+*3.示例代码*
 ```
+GiantVoiceManager.Instance.StopPlayVoice ();
 
-###### 3.8 设置录音参数：
-```Objective-C
-主线程中调用
-    RTChatSDKMain::sharedInstance().setParams("http://giant.audio.mztgame.com/wangpan.php", xfId);
-函数原型：
-    void setParams(const char* voiceUploadUrl, const char* xunfeiAppID);
 ```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-voiceUploadUrl|String|语音文件服务器地址，上传录音文件时需要
-xfId|String|讯飞ID,录音时将录音文件翻译成文字时需要，在讯飞官网上申请
+###### 3.12 设置用户消息
 
 
-###### 3.9 录音
-```Objective-C
-主线程中调用，进入房间之后无法调用，必须离开房间或未进入房间
-  RTChatSDKMain::sharedInstance().startRecordVoice(true);
-函数原型：
-  SdkErrorCode startRecordVoice(bool needConvertWord = false);
+  *1.接口说明  *
+
+   语音消息，设置用户消息
+
+ *2.函数原型 *
+
+   ```
+   //停止播放语音消息
+  public void SetUserInfo (string username, string userkey)；
+  ```
+  | 参数        | 类型           | 意义   |
+  | ------------- |:-------------:| -----:|
+  | username     | string      |   用户名|
+  | userkey     | string      |   可为空|
+
+
+*3.示例代码*
 ```
-参数说明：
+GiantVoiceManager.Instance.SetUserInfo ("username","");
 
-参数|类型|说明
-:-:|:-:|:-:
-needConvertWord|boolean|是否需要将录音翻译成文字，true:翻译成文字
-
-
-
-###### 3.10 停止录音
-```Objective-C
-主线程中调用，进入房间之后无法调用，必须离开房间或未进入房间
-  RTChatSDKMain::sharedInstance().stopRecordVoice();
-函数原型：
-  SdkErrorCode stopRecordVoice();
 ```
+###### 3.13 加入房间回调
+*1.接口说明  *
 
+  加入房间回调接口
 
-###### 3.11 取消录音：
-```Objective-C
-主线程中调用
-  RTChatSDKMain::sharedInstance().cancelRecordedVoice();
-函数原型：
-  SdkErrorCode cancelRecordedVoice();
+*2.函数原型 *
+
+ ```
+ //回调
+ public delegate void JoinRoomCompleteHandler (int retCode);
 ```
-###### 3.12 播放录音
-```Objective-C
-主线程中调用
-  RTChatSDKMain::sharedInstance().startPlayLocalVoice([[dicParam valueForKey:@"url"] UTF8String]);
-函数原型：
-  SdkErrorCode startPlayLocalVoice(const char* voiceUrl);
+| 参数        | 类型           | 意义   |
+| ------------- |:-------------:| -----:|
+| retCode      | int |加入房间状态：1成功，0失败 |
+
+*3.示例代码*
 ```
-参数说明：
+GiantVoiceManager.OnJoinRoomComplete += (int retCode) =>
+{
+    Debug.Log(" joinroomResult  In C# Client re = " + retCode);
+};
 
-参数|类型|说明
-:-:|:-:|:-:
-filePath|String|录音完后自动上传回调返回来的录音文件地址url
+```
+###### 3.14 退出房间回调
+*1.接口说明  *
+
+  退出房间回调
+
+*2.函数原型 *
+
+ ```
+ //回调
+ public delegate void QuitRoomCompleteHandler (int retCode);
+```
+| 参数        | 类型           | 意义   |
+| ------------- |:-------------:| -----:|
+| retCode      | int |加入房间状态：1成功，0失败 |
+
+*3.示例代码*
+```
+GiantVoiceManager.OnQuitRoomComplete += (int retCode) =>
+        {
+            Debug.Log(" quitroomResult  In C# Client re = " + retCode);
+        };
+
+```
+###### 3.15 播放完成回调
+*1.接口说明  *
+
+  播放完成回调
+
+*2.函数原型 *
+
+ ```
+ //回调
+ public delegate void PlayFinishCompleteHandler (int retCode);
+```
+| 参数        | 类型           | 意义   |
+| ------------- |:-------------:| -----:|
+| retCode      | int |加入房间状态：1成功，0失败 |
+
+*3.示例代码*
+```
+GiantVoiceManager.OnPlayOverComplete += (int retCode) =>
+       {
+           Debug.Log(" startplayFinishResult  In C# Client re = " + retCode);
+       };
+
+```
+###### 3.16 录制完成回调
+*1.接口说明  *
+
+  录制完成回调
+
+*2.函数原型 *
+
+ ```
+ //回调
+ public delegate void VoiceRecordCompleteHandler (int retCode, string url, string text,float duration);
+
+```
+| 参数        | 类型           | 意义   |
+| ------------- |:-------------:| -----:|
+| retCode     | int      |   停止录制状态 1 成功， 0 失败|
+| url     | string      |   语音上传地址|
+| text     | string      |   翻译的文字|
+| duration     | float      |   语音时间长度|
+
+*3.示例代码*
+```
+GiantVoiceManager.OnVoiceRecordComplete += (int retCode, string url, string text, float duration) =>
+       {
+           Debug.Log(" voiceRecordResult  In C# Client re = " + retCode + ",url = " + url + ",duration = " + duration);
+           if (url != null)
+           {
+               voiceRecordUrl = url;
+           }
+       };
 
 
-###### 3.13 停止播放录音
-```Objective-C
-主线程中调用
-  RTChatSDKMain::sharedInstance().stopPlayLocalVoice();
-函数原型：
-	SdkErrorCode stopPlayLocalVoice();
 ```
