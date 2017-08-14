@@ -1,55 +1,133 @@
-## IOS应用语音接入文档 V2.9
+## cocos2dx 2.9语音文档
 
-平台Xcode
 ```xml
 SDK说明：
 一：本SDK支持两种语音模式：
 	1.实时语音
 		两人都进入同一个房间，就可以像打电话那样聊天，支持多人进入同一个房间
-	2.离线语音
+  2.离线语音
 		如同微信发语音那样，录制一段语音发送到服务器，服务器返回此语音在服务器的地址，
 		然后用户可将此地址发送给其他用户达到语音交流的效果
-二：本SDK支持视频聊天，可直播
-三：其他：
+二：其他：
   暂时不支持模拟器，需要真机来开发调试
   根据业务需求，可选择只接入语音功能，以减小应用的体积
 ```
 
-#### 一：下载sdk并解压
-###### 1. [下载SDK](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_zip/RTChatSDK_ios_release_2.9.0-20170809.zip)
+### 一：下载SDK
+1.[Cocos2d语音SDK](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_zip/RTChatSDK_cocos_release_2.9.0-20170810.zip)
+
+---
+
+### 二：系统配置  
+###### 2.1 iOS系统配置
+
+>对于iOS的Xcode工程，只要将include目录和libs/iOS目录添加到Xcode工程中并设置头文件引用位置即可
+
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_ios_import.png" width="430">
+
+Xcode 显示为:
+
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_ios_2.png" width="430">
+
+需要添加的库:
+
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_ios_3.png" width="430">
+
+##### 2.2 Android 系统配置
+
+###### 2.2.1 Eclipse配置：
+ >把libs/Android/下文件放到proj.android/libs目录下。然后include和libs/Android目录放到合适的目录，比如工程下面建一个GiantVoice目录：
+
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_1.png" width="430">
+
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_2.png" width="430">
+
+在proj.anroid/jni的Android.mk中添加对库文件和头文件的引用：
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_3.png" width="430">
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_4.png" width="430">
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_5.png" width="430">
+
+在proj.anroid/jni的Application.mk中配置APP_ABI
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_8.png" width="430">
+
+在proj.android/AndroidManifest.xml添加如下权限即可按照Cocos的编译方式
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/cocosandroid-07171.jpg" width="430">
+最后需要在Java中初始化，比如：
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/coco_android_7.png" width="430">
+
+###### 2.2.2 Android Studio配置：
+```xml
+  在app目录下创建文件夹libs，将下载的libs中的Android中的文件拷到libs目录下，并Add AS library
+  配置Android.mk
+    在app/jni/Android.mk中添加对库文件和头文件的引用：
+```
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/cocos_studio1.png" width="430">
+<br/>
+<br>
+<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/cocos_studio2.png" width="430">
+<br/>
+
+```java
+配置 Application.mk:
+    在app/jni/Application.mk中配置对ABI的支持：
+    APP_STL := gnustl_static
+
+    APP_CPPFLAGS := -frtti -DCC_ENABLE_CHIPMUNK_INTEGRATION=1 -std=c++11 -fsigned-char
+    APP_LDFLAGS := -latomic
+
+    APP_ABI := armeabi-v7a
+
+    ifeq ($(NDK_DEBUG),1)
+      APP_CPPFLAGS += -DCOCOS2D_DEBUG=1
+      APP_OPTIM := debug
+    else
+      APP_CPPFLAGS += -DNDEBUG
+      APP_OPTIM := release
+    endif
+
+AndroidManifest.xml 中添加权限：
+
+    <!-- 语音sdk权限开始 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 语音sdk权限结束 -->
+
+在启动Activity中添加初始化：
+
+    public class AppActivity extends Cocos2dxActivity {
+        private NativeVoiceEngine nativeVoiceEngine = new NativeVoiceEngine();
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            // TODO Auto-generated method stub
+            super.onCreate(savedInstanceState);
+            nativeVoiceEngine.register(this);
+        }
+    }
+```
+
+
+
 
 
 ---
-#### 二：项目配置
-###### 2.1.配置静态库：
-```xml
-1.导入全部静态库和thirdpard目录下的文件到xcode工程。
-2.导入include文件夹下的头文件到xcode源码目录。
-3.确认工程的Build Settings->Other Linker Flags下有-ObjC配置，如无请自行添加
-注:请在Build Phases下检查是否有增加了如下静态链接库，如无请添加
-```
-<img src="http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_img/ios-07171.png">
 
-###### 2.2.配置权限：
-```xml
-  检查录音和使用摄像头权限，请在info.plist文件中添加如下两个键值，
-  Privacy – Microphone Usage Description
-  Privacy – Camera Usage Description
-```
-
-***
-#### 三：接入：
-###### 3.1 注册回调：
-
-```Objective-C
-主线程中调用
-RTChatSDKMain::sharedInstance().registerMsgCallback(sdkCallBack);
-	用于注册回调，需要在initSDK之前调用
-	只有当初始化完成后才能调用进入房间的接口;
-	只有进入房间成功后，才能调用调节音量、打开/关闭扬声器;
-	只有录音结束、上传完成后才能调用播放录音的接口.
-
-```
+### 三：基本API
+###### 3.1 接口需要主线程调用
 
 ###### 3.2 初始化sdk:
 ```Objective-C
@@ -206,127 +284,3 @@ filePath|String|录音完后自动上传回调返回来的录音文件地址url
 函数原型：
 	SdkErrorCode stopPlayLocalVoice();
 ```
-
----
-
-### 四：视频接入
-###### 4.1 注册回调
-  同以上语音
-###### 4.2 初始化sdk:
-	同以上语音
-###### 4.3 设置用户名与用户key:
-	同以上语音
-###### 4.4 进入房间：
-	同以上语音
-###### 4.5 发送本地视频：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-	RTChatSDKMain::sharedInstance().startSendVideo();
-函数原型：
-	SdkErrorCode startSendVideo();
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-返回值|int| 0 失败, 1 成功
-
-###### 4.6 显示本地视频：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-	RTChatSDKMain::sharedInstance().observerLocalVideoWindow(false);
-函数原型：
-  SdkErrorCode observerLocalVideoWindow(bool enable, void* ptrWindow = nullptr);
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-enable|boolean|true:打开, false:关闭
-view|SurfaceView|本地视频渲染窗口
-返回值|int|0 失败, 1 成功
-
-###### 4.7 接收远端视频：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-	RTChatSDKMain::sharedInstance().startObserverRemoteVideo(ovideoView);
-函数原型：
-	SdkErrorCode startObserverRemoteVideo(void* ptrWindow = nullptr);
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-view|SurfaceView|远端视频渲染窗口
-enable|boolean| true:打开扬声器；false:关闭扬声器
-返回值|int|0 失败, 1 成功
-
-###### 4.8 关闭远端视频：
-```Objective-C
-主线程中调用
-	RTChatSDKMain::sharedInstance().stopObserverRemoteVideo();
-函数原型：
-	SdkErrorCode stopObserverRemoteVideo();
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-返回值|int|0 失败, 1 成功
-
-###### 4.9 切换发送视频源：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-	RTChatSDKMain::sharedInstance().switchVideoSource(kVideoSourceBackCamera);
-函数原型：
-	SdkErrorCode switchVideoSource(enVideoSource sourceIndex, void* ptrScreenView = nullptr);
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-videoSource|int| 1:前置摄像头, 2:后置摄像头
-返回值|int|0 失败, 1 成功
-
-###### 4.10 切换模式显示：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-切换到单人模式观看，传入指定的用户名即可
-若传入为null则为看会议视频
-	RTChatSDKMain::sharedInstance().switchRemoteTarget(RTChatHelper::instance().currentUser().c_str());
-函数原型：
-	SdkErrorCode switchRemoteTarget(const char* userID);
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-userId|char*| 被观看者id, 注:设为null则观看混合视频
-返回值|int|0 失败, 1 成功
-
-
-###### 4.12 打开美颜：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-	RTChatSDKMain::sharedInstance().enableBeautify(sender.isOn);
-函数原型：
-	void enableBeautify(bool enabled);
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-enabled|boolean| true:打开美颜；false:关闭美颜
-
-###### 4.13 变声：
-```Objective-C
-主线程中调用，进入房间之后调用才有效
-	RTChatSDKMain::sharedInstance().setVoiceChangeParm(pitch);
-函数原型：
-	SdkErrorCode setVoiceChangeParm(int pitch);
-```
-参数说明：
-
-参数|类型|说明
-:-:|:-:|:-:
-pitch|int|pitch 取值范围为 [-10,10]
