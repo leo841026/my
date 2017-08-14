@@ -15,7 +15,7 @@ SDK说明：
 ```
 
 #### 一：下载sdk并解压
-###### 1. [下载SDK](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_zip/RTChatSDK_android_release_2.9.zip)
+###### 1. [下载SDK](http://cdn.mztgame.ztgame.com.cn/gavoice_rtchat/resource_zip/RTChatSDK_android_release_2.9.0-20170809.zip)
 
 ---
 #### 二：项目配置
